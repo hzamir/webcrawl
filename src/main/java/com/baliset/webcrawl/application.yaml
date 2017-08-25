@@ -1,0 +1,32 @@
+app:
+  name:         webcrawl
+  description:  a sample webcrawling service
+
+server:
+  port: 3939
+
+infoutil:
+  logBeans: true
+
+endpoints:
+  shutdown:
+    enabled: true #this allows the /shutdown url to operate, for test purposes only
+
+spring:
+  jackson:
+    serialization:
+      indent_output: true
+
+# handy to have a legible set for any periodic services
+cronExpressionConstants:
+  weeknightsAtMidnight: '0 0    0   ?   * TUE-SAT'
+  dailyAtMidnight:      '0 0    0   1/1 * ?      '
+  every20Seconds:       '0/20 * *   1/1 * ?      '
+  everyMinute:          '0 0/1  *   1/1 * ?      '
+  everyFiveMinutes:     '0 0/5  *   1/1 * ?      '
+  everyTenMinutes:      '0 0/10 *   1/1 * ?      '
+  onTheQuarterHour:     '0 0/15 *   1/1 * ?      '
+  onTheHalfHour:        '0 0/30 *   1/1 * ?      '
+  onTheHour:            '0 0    0/1 1/1 * ?      '
+
+
