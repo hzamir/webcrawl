@@ -49,6 +49,15 @@
         </dependency>
 
 
+        <!-- html parsing library MIT license -->
+        <!-- https://mvnrepository.com/artifact/org.jsoup/jsoup -->
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>1.10.3</version>
+        </dependency>
+
+
         <!--<dependency>-->
             <!--&lt;!&ndash; the actuator is included to provide standard management services, health, audits, beans, etc.&ndash;&gt;-->
             <!--<groupId>org.springframework.boot</groupId>-->
