@@ -14,15 +14,18 @@ public class Crawl
 
   private CrawlConfig config;
   private Set<String> links;
+  private Issues issues;
 
   public Crawl(CrawlConfig config) {
     this.config = config;
-    links = new HashSet<String>();
+    links = new HashSet<>();
+    issues = new Issues();
   }
 
   public void crawl()
   {
       getPageLinks(config.getInitialUrl(), 0);
+      issues.printReasons();
   }
 
   private boolean shouldFollowProtocol(String protocol)
@@ -35,45 +38,39 @@ public class Crawl
        return !config.isStayInDomain() || config.getInitialDomain().equals(domain);
   }
 
-  private boolean shouldFollowUrl(String urlstring, int depth)
+  private Reason shouldContinue(int depth)
   {
 
+    if (depth > config.getDepthLimit())
+      return issues.addIssue(Reason.ExceededDepthLimit);
+
+    if (config.timeLeft() <= 0)
+      return issues.addIssue(Reason.ExceededExecutionTimeLimit);
+
+    return Reason.Ok;
+  }
+
+  private Reason shouldFollowUrl(String urlstring)
+  {
     try {
-
-      if(depth > config.getDepthLimit())
-      {
-        System.err.println("Hit depth limit: " + depth);
-        return false;
-        
-      }
-
-      if(config.timeLeft() <= 0) {
-        System.err.println("we are out of time: ");
-        return false;
-      }
-
       URL url = new URL(urlstring);
       String protocol = url.getProtocol();
       if(!shouldFollowProtocol(protocol))
       {
-        System.err.println("Not following protocol: " + protocol);
-        return false;
+        return Reason.UnsupportedProtocol;
       }
 
       String host = url.getHost();
       if(!shouldFollowDomain(host))
       {
-        System.err.println("Not following host: " + host);
-        return false;
+        return Reason.OutsideDomain;
       }
 
-
     } catch (MalformedURLException e) {
-      System.err.println("Malformed URL: ");
-      return false;
+      return Reason.MalformedUrl;
     }
 
-    return true;
+    return Reason.Ok;
   }
 
   private void add(String url)
@@ -92,7 +89,9 @@ public class Crawl
 
         add(url);
 
-        if(!shouldFollowUrl(url, ++depth))
+        if(shouldContinue(++depth) != Reason.Ok)
+
+        if(shouldFollowUrl(url) != Reason.Ok)
           return;
 
         Document document = Jsoup.connect(url).get();
