@@ -13,18 +13,21 @@ public class Crawl
 {
 
   private CrawlConfig config;
-  private Set<String> links;
+
+  private Map<String, CrawlNode> links;
+  private CrawlNode start;     // place from which we trace all other nodes while crawling
   private Issues issues;
 
   public Crawl(CrawlConfig config) {
     this.config = config;
-    links = new HashSet<>();
+    links = new HashMap<>();
     issues = new Issues();
   }
 
   public void crawl()
   {
-      getPageLinks(config.getInitialUrl(), 0);
+      getPageLinks(start, config.getInitialUrl(), 0);
+      start.print(0);
       issues.printReasons();
   }
 
@@ -73,34 +76,51 @@ public class Crawl
     return Reason.Ok;
   }
 
-  private void add(String url)
+  private CrawlNode add(String url)
   {
-    if (links.add(url)) {
-      System.out.println(url);
-    }
+    CrawlNode node = new CrawlNode(url);
+
+
+    links.put(url, node);
+    if(start == null)
+      start = node;
+
+    //System.out.println(url);
+    return node;
   }
 
-  private void getPageLinks(String url, int depth)
+  private void getPageLinks(CrawlNode parent, String url, int depth)
   {
 
-    if (!links.contains(url)) {
+    if (!links.containsKey(url)) {
 
       try {
 
-        add(url);
+        CrawlNode node = add(url);  // first track the node, whether we can download it or not
 
-        if(shouldContinue(++depth) != Reason.Ok)
+        if(parent != null)
+          parent.addChild(node);    // keep a record of the children
 
-        if(shouldFollowUrl(url) != Reason.Ok)
+        Reason reason =  shouldContinue(++depth);
+        if(reason != Reason.Ok) {
+          node.setFollowed(false);
+          node.setReason(reason);
           return;
+        }
+
+        reason = shouldFollowUrl(url);
+        if(reason != Reason.Ok) {
+          node.setFollowed(false);
+          node.setReason(reason);
+          return;
+        }
 
         Document document = Jsoup.connect(url).get();
         Elements linksOnPage = document.select("a[href]");
 
 
-        //5. For each extracted URL... go back to Step 4.
         for (Element page : linksOnPage) {
-          getPageLinks(page.attr("abs:href"), depth);
+          getPageLinks(node, page.attr("abs:href"), depth);
         }
       } catch (IOException e) {
         System.err.println("For '" + url + "': " + e.getMessage());
