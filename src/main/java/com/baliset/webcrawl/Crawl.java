@@ -38,7 +38,7 @@ public class Crawl
 
   private boolean shouldFollowProtocol(String protocol)
   {
-    return "http".equals(protocol);
+    return protocol != null && protocol.startsWith("http");
   }
 
   private boolean shouldFollowDomain(String domain)
@@ -99,6 +99,19 @@ public class Crawl
     return node;
   }
 
+
+  private void getLinkSpec(CrawlNode node,int depth, Document document, String spec)
+  {
+    Elements linksOnPage = document.select(spec);
+
+    for (Element page : linksOnPage) {
+      getPageLinks(node, page.attr("abs:href"), depth);
+    }
+
+  }
+
+  static String[] linkrefs = {"a[href]", "link[href]",  "iframe[src]", "embed[src]", "input[src]", "script[src]", "img[src]", "object[data]", "q[cite]", "del[cite]" };
+
   private void getPageLinks(CrawlNode parent, String url, int depth)
   {
 
@@ -126,30 +139,30 @@ public class Crawl
         }
 
 
+        try {
+          Connection connection = Jsoup.connect(url);
+          Connection.Response response = connection.userAgent(config.getUseragent()).ignoreHttpErrors(true).execute();
+          int statusCode = response.statusCode();
+          node.setStatus(statusCode);
 
-        Connection connection =   Jsoup.connect(url);
-        Connection.Response response = connection.userAgent(config.getUseragent()).ignoreHttpErrors(true).execute();
-        int statusCode = response.statusCode();
-        node.setStatus(statusCode);
-        
-        if(statusCode == 200)
-        {
-          node.setReason(Reason.Ok);
-          Document document = connection.get();
-          Elements linksOnPage = document.select("a[href]");
+          if (statusCode == 200) {
+            node.setReason(Reason.Ok);
+            Document document = connection.get();
 
-          for (Element page : linksOnPage) {
-            getPageLinks(node, page.attr("abs:href"), depth);
+            for (String spec : linkrefs)
+              getLinkSpec(node, depth, document, spec);
+
+          } else {
+            node.setFollowed(false);
+            node.setReason(Reason.OtherBadStatus);
           }
 
-        } else {
-          node.setFollowed(false);
-          node.setReason(Reason.OtherBadStatus);
+        } catch (Exception e) {
+          node.setReason(Reason.UnsupportedFormat);
         }
 
 
-
-      } catch (IOException e) {
+      } catch (Exception e) {
         System.err.println("For '" + url + "': " + e.getMessage());
       }
     }
