@@ -1,9 +1,10 @@
 package com.baliset.webcrawl;
 
-import org.jsoup.Jsoup;
+import org.jsoup.*;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.slf4j.*;
 
 import java.io.IOException;
 import java.net.*;
@@ -11,21 +12,25 @@ import java.util.*;
 
 public class Crawl
 {
+  private static final Logger logger = LoggerFactory.getLogger(Crawl.class);
 
   private CrawlConfig config;
 
   private Map<String, CrawlNode> links;
   private CrawlNode start;     // place from which we trace all other nodes while crawling
   private Issues issues;
+  private long startTime;
 
   public Crawl(CrawlConfig config) {
     this.config = config;
+    logger.info(config.toString());
     links = new HashMap<>();
     issues = new Issues();
   }
 
   public void crawl()
   {
+      startTime = System.currentTimeMillis();
       getPageLinks(start, config.getInitialUrl(), 0);
       start.print(0);
       issues.printReasons();
@@ -38,7 +43,11 @@ public class Crawl
 
   private boolean shouldFollowDomain(String domain)
   {
-       return !config.isStayInDomain() || config.getInitialDomain().equals(domain);
+
+      // not domain restricted, or strictly in the domain, or if supported in a subdomain of the domain
+       return   !config.isStayInDomain() ||
+                config.getInitialDomain().equals(domain) ||
+                domain.endsWith(config.getInitialDomain());
   }
 
   private Reason shouldContinue(int depth)
@@ -47,7 +56,9 @@ public class Crawl
     if (depth > config.getDepthLimit())
       return issues.addIssue(Reason.ExceededDepthLimit);
 
-    if (config.timeLeft() <= 0)
+    long deadline  = startTime + (config.getMinutesLimit() * 60_000);
+
+    if (System.currentTimeMillis() > deadline)
       return issues.addIssue(Reason.ExceededExecutionTimeLimit);
 
     return Reason.Ok;
@@ -85,7 +96,6 @@ public class Crawl
     if(start == null)
       start = node;
 
-    //System.out.println(url);
     return node;
   }
 
@@ -115,13 +125,30 @@ public class Crawl
           return;
         }
 
-        Document document = Jsoup.connect(url).get();
-        Elements linksOnPage = document.select("a[href]");
 
 
-        for (Element page : linksOnPage) {
-          getPageLinks(node, page.attr("abs:href"), depth);
+        Connection connection =   Jsoup.connect(url);
+        Connection.Response response = connection.userAgent(config.getUseragent()).ignoreHttpErrors(true).execute();
+        int statusCode = response.statusCode();
+        node.setStatus(statusCode);
+        
+        if(statusCode == 200)
+        {
+          node.setReason(Reason.Ok);
+          Document document = connection.get();
+          Elements linksOnPage = document.select("a[href]");
+
+          for (Element page : linksOnPage) {
+            getPageLinks(node, page.attr("abs:href"), depth);
+          }
+
+        } else {
+          node.setFollowed(false);
+          node.setReason(Reason.OtherBadStatus);
         }
+
+
+
       } catch (IOException e) {
         System.err.println("For '" + url + "': " + e.getMessage());
       }

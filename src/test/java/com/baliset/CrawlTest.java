@@ -18,9 +18,9 @@ public class CrawlTest
 
     config.setAllowSubdomains(false);
     config.setStayInDomain(true);
-    config.setDepthLimit(500);
-    config.setMinutesLimit(5);
-    config.setInitialUrl("http://www.wipro.com");
+    config.setDepthLimit(1);
+    config.setMinutesLimit(1);
+    config.setInitialUrl("http://www.wiprodigital.com");
 
     Crawl crawler = new Crawl(config);
     crawler.crawl();

@@ -2,12 +2,12 @@ package com.baliset.webcrawl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.*;
-import org.springframework.context.ApplicationContext;
+import org.springframework.boot.builder.*;
+import org.springframework.context.*;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+import javax.swing.*;
 
 
 @SpringBootApplication
@@ -15,25 +15,30 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class Application
 {
 
-  private static Logger logger = LoggerFactory.getLogger(Application.class);
+  private static final Logger logger = LoggerFactory.getLogger(Application.class);
 
-  private ApplicationContext applicationContext;
+  private static void setupLookAndFeel()
+  {
+    try {
+      // Set cross-platform Java L&F (also called "Metal")
+      UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+    } catch (Exception e) {
+      logger.error("setupLookAndFeel  exception", e);
+    }
+  }
+
 
   public static void main(String[] args)
   {
-    ApplicationContext ctx = SpringApplication.run(Application.class, args);
+    setupLookAndFeel();
 
-    Application application = ctx.getBean(Application.class);  // the application might as well be a singleton too, no?
-    application.applicationContext = ctx;  // todo: can this be injected straight into Application instance
-
-    application.stuff();                   // todo: maybe just use initializationaware lifecycle routine for this?
-
+    ConfigurableApplicationContext ctx =
+        new
+            SpringApplicationBuilder(Application.class)
+            .headless(false)
+            .web(false)
+            .run(args);
   }
-  //do as much as possible inside an instance of Application rather than in a static method
-  private void stuff()
-  {
 
-    logger.info("Kudos, the server is ready"); // todo: replace with pattern that checks all parts are ready
 
-  }
 }

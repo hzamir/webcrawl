@@ -50,6 +50,9 @@ public class CrawlNode
   {
 
     p(level,"{ \"node\" : \""+url+"\"");
+    System.out.print(", \"status\" : " + status);
+    System.out.print(", \"reason\" : \"" + reason.name() + "\"");
+    
 
     if(children != null) {
       System.out.print(", \"refs\" : [");

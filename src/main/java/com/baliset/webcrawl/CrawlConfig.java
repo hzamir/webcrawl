@@ -1,10 +1,18 @@
 package com.baliset.webcrawl;
 
+import org.springframework.boot.context.properties.*;
+import org.springframework.context.annotation.*;
+
 import java.net.*;
 
 // basic parameters governing the search
+
+
+@Configuration
+@ConfigurationProperties(prefix = "webcrawl.defaults")
 public class CrawlConfig
 {
+  private String  useragent;
   private String  initialUrl;
   private boolean stayInDomain;     // stay in domain (don't go to another domain)
   private boolean allowSubdomains;  // if inside domain are subdomains ok?
@@ -14,7 +22,6 @@ public class CrawlConfig
 
   // ---derived information
   private String initialDomain;  // extracted from initialUrl
-  private long deadline;         // when we must finish execution
 
 
 
@@ -48,8 +55,6 @@ public class CrawlConfig
   {
     this.minutesLimit = minutesLimit;
 
-    // deadline to finish execution is
-    this.deadline = System.currentTimeMillis() + (minutesLimit * 60_000);
   }
 
   public int getDepthLimit()
@@ -82,10 +87,22 @@ public class CrawlConfig
          return initialDomain;
   }
 
-  public long timeLeft()
+  public String toString()
   {
-    return deadline - System.currentTimeMillis();
+    return String.format("{url:%s, domain: %s, stay:%s, follow:%s, depth:%d, minutes:%d}",
+        initialUrl, initialDomain, stayInDomain, allowSubdomains, depthLimit, minutesLimit
+    );
+
   }
 
+  public String getUseragent()
+  {
+    return useragent;
+  }
+
+  public void setUseragent(String useragent)
+  {
+    this.useragent = useragent;
+  }
 }
 
