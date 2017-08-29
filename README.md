@@ -4,14 +4,19 @@
 
 Assuming for now we will write it as a spring-boot java microservice (which might be not a good choice)
 
-mvn clean install
+mvn clean package
 
-# 2. how to run it
+# 2. how to run it (it requires Java 1.8)
+From a terminal command line
+
+cd to the target directory from the above build
 
 java -jar webcrawler.jar
 
 
 # 3. areas of expansion (and I haven't even started yet!)
+* Can be packaged as an App on mac, exe on windows, etc.
+* Offer headless option to run from command line without editing the parameters
 * These could potentially run for a long time, so some intermittent updates status updates would be necessary
 * It should be possible to stop the crawl at anytime
 * Metrics should be included in json output format that specify number of different types of links, errors, statuses, etc.
