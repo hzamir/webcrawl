@@ -13,6 +13,9 @@ cd to the target directory from the above build
 
 java -jar webcrawler.jar
 
+(If you put the application.yaml file in the same directory as the executable, you can edit the defaults that it uses
+ Any uneditable values in the UI (currently including the even url!) can be edited there prior to execution.
+)
 
 # 3. areas of expansion (and I haven't even started yet!)
 * Can be packaged as an App on mac, exe on windows, etc.
