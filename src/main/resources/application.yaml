@@ -2,33 +2,11 @@ app:
   name:         webcrawl
   description:  a sample webcrawling service
 
-server:
-  port: 3939
-
-infoutil:
-  logBeans: true
-
-endpoints:
-  shutdown:
-    enabled: true #this allows the /shutdown url to operate, for test purposes only
 
 spring:
   jackson:
     serialization:
       indent_output: true
-
-# handy to have a legible set for any periodic services
-cronExpressionConstants:
-  weeknightsAtMidnight: '0 0    0   ?   * TUE-SAT'
-  dailyAtMidnight:      '0 0    0   1/1 * ?      '
-  every20Seconds:       '0/20 * *   1/1 * ?      '
-  everyMinute:          '0 0/1  *   1/1 * ?      '
-  everyFiveMinutes:     '0 0/5  *   1/1 * ?      '
-  everyTenMinutes:      '0 0/10 *   1/1 * ?      '
-  onTheQuarterHour:     '0 0/15 *   1/1 * ?      '
-  onTheHalfHour:        '0 0/30 *   1/1 * ?      '
-  onTheHour:            '0 0    0/1 1/1 * ?      '
-
 
 
 # this is an unofficial random sampling of some useragents, since these influence webcrawling results
@@ -41,11 +19,21 @@ useragents:
 
 webcrawl:
   defaults:
-       useragent:  ${useragents.chromeOnMac}
-       initialUrl: http://wiprodigital.com
-       stayInDomain: true                 # stay in domain (don't go to another domain)
-       allowSubdomains: false             #if inside domain are subdomains ok?
-       minutesLimit: 1                    # max time
-       depthLimit: 10                     # max depth
-
+    useragent:  ${useragents.chromeOnMac}
+    initialUrl: http://wiprodigital.com
+    stayInDomain: true                 # stay in domain (don't go to another domain)
+    allowSubdomains: false             #if inside domain are subdomains ok?
+    minutesLimit: 1                    # max time
+    depthLimit: 10                     # max depth
+    linkTypes:                         #specify tag[attribute] combinations that contain urls that crawler should report
+      - a[href]
+      - link[href]
+      - iframe[src]
+      - embed[src]
+      - input[src]
+      - script[src]
+      - img[src]
+      - object[data]
+      - q[cite]
+      - del[cite]
 

@@ -3,6 +3,7 @@ package com.baliset.webcrawl;
 public enum Reason
 {
     Ok(false),                      // ok
+    Stopped(false),
     ExceededDepthLimit(true),
     ExceededExecutionTimeLimit(true),
     ExceededConnectionTimeLimit(true),

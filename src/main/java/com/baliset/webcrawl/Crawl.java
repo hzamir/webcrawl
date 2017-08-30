@@ -20,6 +20,7 @@ public class Crawl
   private CrawlNode start;     // place from which we trace all other nodes while crawling
   private Issues issues;
   private long startTime;
+  private boolean stop;
 
   public Crawl(CrawlConfig config) {
     this.config = config;
@@ -52,6 +53,9 @@ public class Crawl
 
   private Reason shouldContinue(int depth)
   {
+
+    if(stop)
+      return Reason.Stopped;
 
     if (depth > config.getDepthLimit())
       return issues.addIssue(Reason.ExceededDepthLimit);
@@ -104,13 +108,14 @@ public class Crawl
   {
     Elements linksOnPage = document.select(spec);
 
+    String attributeKey = "abs:" +  spec.split("[\\[\\]]")[1];
+
     for (Element page : linksOnPage) {
-      getPageLinks(node, page.attr("abs:href"), depth);
+      getPageLinks(node, page.attr(attributeKey), depth);
     }
 
   }
 
-  static String[] linkrefs = {"a[href]", "link[href]",  "iframe[src]", "embed[src]", "input[src]", "script[src]", "img[src]", "object[data]", "q[cite]", "del[cite]" };
 
   private void getPageLinks(CrawlNode parent, String url, int depth)
   {
@@ -149,7 +154,7 @@ public class Crawl
             node.setReason(Reason.Ok);
             Document document = connection.get();
 
-            for (String spec : linkrefs)
+            for (String spec : config.getLinkTypes())
               getLinkSpec(node, depth, document, spec);
 
           } else {
@@ -169,4 +174,8 @@ public class Crawl
   }
 
 
+  public void stop()
+  {
+    stop = true;
+  }
 }

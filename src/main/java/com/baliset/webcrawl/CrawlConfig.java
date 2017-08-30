@@ -1,16 +1,15 @@
 package com.baliset.webcrawl;
 
+import org.springframework.beans.factory.*;
 import org.springframework.boot.context.properties.*;
 import org.springframework.context.annotation.*;
 
 import java.net.*;
-
-// basic parameters governing the search
-
+import java.util.*;
 
 @Configuration
 @ConfigurationProperties(prefix = "webcrawl.defaults")
-public class CrawlConfig
+public class CrawlConfig implements InitializingBean
 {
   private String  useragent;
   private String  initialUrl;
@@ -18,6 +17,12 @@ public class CrawlConfig
   private boolean allowSubdomains;  // if inside domain are subdomains ok?
   private int     minutesLimit;     // max time
   private int     depthLimit;       // max depth
+
+  private List<String> linkTypes = new ArrayList<>();
+
+  public List<String> getLinkTypes() {
+    return linkTypes;
+  }
 
 
   // ---derived information
@@ -103,6 +108,12 @@ public class CrawlConfig
   public void setUseragent(String useragent)
   {
     this.useragent = useragent;
+  }
+
+  @Override
+  public void afterPropertiesSet() throws Exception
+  {
+    System.out.print("hi\n");
   }
 }
 
