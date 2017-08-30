@@ -1,5 +1,7 @@
 package com.baliset.webcrawl;
 
+import com.fasterxml.jackson.core.*;
+import com.fasterxml.jackson.databind.*;
 import org.jsoup.*;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -29,11 +31,23 @@ public class Crawl
     issues = new Issues();
   }
 
+
+  private void print(CrawlNode crawlNode)
+  {
+    try {
+      String output = new ObjectMapper()
+          .enable(SerializationFeature.INDENT_OUTPUT)
+          .writeValueAsString(crawlNode);
+      System.out.print(output);
+    } catch (JsonProcessingException e) {
+      e.printStackTrace();
+    }
+  }
   public void crawl()
   {
       startTime = System.currentTimeMillis();
       getPageLinks(start, config.getInitialUrl(), 0);
-      start.print(0);
+      print(start);
       issues.printReasons();
   }
 
