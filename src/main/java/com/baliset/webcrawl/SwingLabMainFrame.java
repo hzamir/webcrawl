@@ -43,7 +43,7 @@ public class SwingLabMainFrame extends JFrame
     final JLabel labelDepth = new JLabel(kDepthLimitPrefix + config.getDepthLimit());
 
     final JLabel labelUseragent = new JLabel(config.getUseragent());
-    final JLabel labeStartUrl = new JLabel(config.getInitialUrl());
+    final JTextField textStartUrl = new JTextField(config.getInitialUrl());
     final JLabel labelStartDomain =  new JLabel(config.getInitialDomain());
 
 
@@ -66,7 +66,13 @@ public class SwingLabMainFrame extends JFrame
       labelMinutes.setText(kMaxMinutesPrefix + v);
     };
 
-    
+
+    ActionListener startUrlListener = actionEvent -> config.setInitialUrl(
+        ((JTextField)actionEvent.getSource()).getText()
+    );
+
+    textStartUrl.addActionListener(startUrlListener);
+
     ActionListener stayInDomainListener = actionEvent -> {
       AbstractButton abstractButton = (AbstractButton) actionEvent.getSource();
       boolean v = abstractButton.getModel().isSelected();
@@ -86,16 +92,13 @@ public class SwingLabMainFrame extends JFrame
     checkboxStayInDomain.addActionListener(stayInDomainListener);
     checkboxFollowSubdomains.addActionListener(depthActionListener);
 
-    JPanel optionsPanel = new JPanel();
-    optionsPanel.setLayout(new BoxLayout(optionsPanel, BoxLayout.Y_AXIS));
 
-    Border optionsBorder = BorderFactory.createTitledBorder("Options");
-    Border buttonsBorder = BorderFactory.createTitledBorder("Actions");
+    JPanel optionsPanel = GuiUtil.createPanel("Options", BoxLayout.Y_AXIS);
 
-    optionsPanel.setBorder(optionsBorder);
+
     // optionsPanel.setPreferredSize(new Dimension(300,120)) ;
 
-    optionsPanel.add(labeStartUrl);
+    optionsPanel.add(textStartUrl);
     optionsPanel.add(labelStartDomain);
     optionsPanel.add(labelUseragent);
     optionsPanel.add(labelDepth);
@@ -108,8 +111,9 @@ public class SwingLabMainFrame extends JFrame
 
     optionsPanel.add(sliderMinutes);     // number of sectors
 
-    JPanel execPanel = new JPanel();
-    execPanel.setBorder(buttonsBorder);
+
+    JPanel execPanel = GuiUtil.createPanel("Actions", -1);
+
     execPanel.setPreferredSize(new Dimension(400, 100));
     JButton launch = createLaunchButton();
     execPanel.add(launch);
@@ -143,20 +147,42 @@ public class SwingLabMainFrame extends JFrame
   {
     SwingLabAction sa = SwingLabAction.Launch;
 
+    final String kStart = "Crawl";
+    final String kStop = "Stop";
+
+    final JButton button = new JButton(kStart);
+
     AbstractAction action = new AbstractAction(sa.getLabel())
     {
+      private boolean start;
+      private Crawl crawl;
+
       public void actionPerformed(ActionEvent e)
       {
-        Crawl crawl = new Crawl(config);
-        crawl.crawl();
+        start = !start;
+
+        button.setText(start?kStop:kStart);
+
+        if(start) {
+          crawl = new Crawl(config);
+          
+          // start the thread
+          new Thread(crawl::crawl).start();
+          //todo change the button text to say start again if it runs to conclusion without manually stopping
+
+        } else {
+          crawl.stop();
+        }
 
       }
 
     };
 
+    button.setAction(action);
+
     // assignAction(KeyEvent.VK_A, 0, sa, appendItemAction);
 
-    return new JButton(action);
+    return button;
   }
 
 
