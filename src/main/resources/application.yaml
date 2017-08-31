@@ -23,7 +23,7 @@ webcrawl:
     useragent:  ${useragents.chromeOnMac}
     initialUrl: http://wiprodigital.com
     stayInDomain: true                 # stay in domain (don't go to another domain)
-    allowSubdomains: false             #if inside domain are subdomains ok?
+    allowSubdomains: true              # if inside domain are subdomains ok?
     minutesLimit: 1                    # max time
     depthLimit: 10                     # max depth
     linkTypes:                         #specify tag[attribute] combinations that contain urls that crawler should report
