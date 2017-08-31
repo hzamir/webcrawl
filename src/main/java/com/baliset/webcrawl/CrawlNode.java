@@ -1,15 +1,18 @@
 package com.baliset.webcrawl;
 
-import com.fasterxml.jackson.core.*;
-import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.dataformat.xml.annotation.*;
 
 import java.util.*;
 
 public class CrawlNode
 {
   private String url;         // what is the url
+
+  @JacksonXmlProperty(isAttribute = true)
   private boolean followed;   // was it followed
+  @JacksonXmlProperty(isAttribute = true)
   private int status;
+  @JacksonXmlProperty(isAttribute = true)
   private Reason reason;
 
   public String getUrl()              { return url; }
@@ -18,6 +21,7 @@ public class CrawlNode
   public Reason getReason()           { return reason; }
   public Set<CrawlNode> getChildren() { return children; }
 
+  @JacksonXmlProperty(localName = "node")
   private Set<CrawlNode> children;
 
 

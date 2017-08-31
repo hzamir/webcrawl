@@ -8,7 +8,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.*;
 
-import java.io.IOException;
 import java.net.*;
 import java.util.*;
 
@@ -21,6 +20,10 @@ public class Crawl
   private Map<String, CrawlNode> links;
   private CrawlNode start;     // place from which we trace all other nodes while crawling
   private Issues issues;
+  private Stats stats;
+
+  private OutputFormatter outputFormatter;
+
   private long startTime;
   private boolean stop;
 
@@ -28,27 +31,21 @@ public class Crawl
     this.config = config;
     logger.info(config.toString());
     links = new HashMap<>();
+    stats= new Stats();
     issues = new Issues();
+    outputFormatter = new OutputFormatter();
   }
 
 
-  private void print(CrawlNode crawlNode)
-  {
-    try {
-      String output = new ObjectMapper()
-          .enable(SerializationFeature.INDENT_OUTPUT)
-          .writeValueAsString(crawlNode);
-      System.out.print(output);
-    } catch (JsonProcessingException e) {
-      e.printStackTrace();
-    }
-  }
   public void crawl()
   {
-      startTime = System.currentTimeMillis();
-      getPageLinks(start, config.getInitialUrl(), 0);
-      print(start);
-      issues.printReasons();
+    startTime = System.currentTimeMillis();
+    getPageLinks(start, config.getInitialUrl(), 0);
+
+    CrawlResults crawlResults = new CrawlResults(config, stats, issues, start);
+
+    outputFormatter.selectFormat(config.getOutputFormat());
+    outputFormatter.print(crawlResults);
   }
 
   private boolean shouldFollowProtocol(String protocol)
@@ -59,10 +56,10 @@ public class Crawl
   private boolean shouldFollowDomain(String domain)
   {
 
-      // not domain restricted, or strictly in the domain, or if supported in a subdomain of the domain
-       return   !config.isStayInDomain() ||
-                config.getInitialDomain().equals(domain) ||
-                domain.endsWith(config.getInitialDomain());
+    // not domain restricted, or strictly in the domain, or if supported in a subdomain of the domain
+       return !config.isStayInDomain() ||
+           config.getInitialDomain().equals(domain) ||
+           domain.endsWith(config.getInitialDomain());
   }
 
   private Reason shouldContinue(int depth)

@@ -19,6 +19,7 @@ useragents:
 
 webcrawl:
   defaults:
+    outputFormat: json
     useragent:  ${useragents.chromeOnMac}
     initialUrl: http://wiprodigital.com
     stayInDomain: true                 # stay in domain (don't go to another domain)

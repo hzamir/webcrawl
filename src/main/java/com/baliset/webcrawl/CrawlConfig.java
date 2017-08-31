@@ -17,6 +17,7 @@ public class CrawlConfig implements InitializingBean
   private boolean allowSubdomains;  // if inside domain are subdomains ok?
   private int     minutesLimit;     // max time
   private int     depthLimit;       // max depth
+  private String outputFormat;      // xml, yaml, or json
 
   private List<String> linkTypes = new ArrayList<>();
 
@@ -114,6 +115,12 @@ public class CrawlConfig implements InitializingBean
   public void afterPropertiesSet() throws Exception
   {
     System.out.print("hi\n");
+  }
+
+  public void setOutputFormat(String s) { outputFormat = s;}
+  public String getOutputFormat()
+  {
+    return outputFormat;
   }
 }
 
