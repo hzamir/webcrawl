@@ -1,14 +1,12 @@
 package com.baliset.webcrawl;
 
-import com.fasterxml.jackson.core.*;
-import com.fasterxml.jackson.databind.*;
 import org.jsoup.*;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
+import org.jsoup.nodes.*;
+import org.jsoup.select.*;
 import org.slf4j.*;
 
 import java.net.*;
+import java.time.*;
 import java.util.*;
 
 public class Crawl
@@ -32,17 +30,35 @@ public class Crawl
     logger.info(config.toString());
     links = new HashMap<>();
     stats= new Stats();
+    stats.terminationCode = TerminationCode.CrawlCompleted;
     issues = new Issues();
     outputFormatter = new OutputFormatter();
   }
 
+  private String durationFormat(Duration duration)
+  {
+    long hours = duration.toHours();
+    int minutes = (int) ((duration.getSeconds() % (60 * 60)) / 60);
+    int seconds = (int) (duration.getSeconds() % 60);
+    return String.format("%d:%d:%d", hours,minutes,seconds);
+  }
 
   public void crawl()
   {
     startTime = System.currentTimeMillis();
+    Instant startInstant = Instant.now();
+
+
     getPageLinks(start, config.getInitialUrl(), 0);
 
+    stats.elapsedTime = durationFormat(Duration.between(startInstant, Instant.now()));
+
+
+
+
+
     CrawlResults crawlResults = new CrawlResults(config, stats, issues, start);
+
 
     outputFormatter.selectFormat(config.getOutputFormat());
     outputFormatter.print(crawlResults);
@@ -65,17 +81,20 @@ public class Crawl
   private Reason shouldContinue(int depth)
   {
 
-    if(stop)
+    if(stop) {
+      stats.terminationCode = TerminationCode.StoppedByUser;
       return Reason.Stopped;
+    }
 
     if (depth > config.getDepthLimit())
       return issues.addIssue(Reason.ExceededDepthLimit);
 
     long deadline  = startTime + (config.getMinutesLimit() * 60_000);
 
-    if (System.currentTimeMillis() > deadline)
+    if (System.currentTimeMillis() > deadline) {
+      stats.terminationCode = TerminationCode.AllocatedTimeExpired;
       return issues.addIssue(Reason.ExceededExecutionTimeLimit);
-
+    }
     return Reason.Ok;
   }
 
@@ -105,7 +124,7 @@ public class Crawl
   private CrawlNode add(String url)
   {
     CrawlNode node = new CrawlNode(url);
-
+    ++stats.unique;
 
     links.put(url, node);
     if(start == null)
@@ -131,6 +150,7 @@ public class Crawl
   private void getPageLinks(CrawlNode parent, String url, int depth)
   {
 
+    ++stats.total;
     if (!links.containsKey(url)) {
 
       try {
@@ -162,13 +182,16 @@ public class Crawl
           node.setStatus(statusCode);
 
           if (statusCode == 200) {
+            ++stats.fetchedOk;
             node.setReason(Reason.Ok);
             Document document = connection.get();
+            ++stats.parsed;
 
             for (String spec : config.getLinkTypes())
               getLinkSpec(node, depth, document, spec);
 
           } else {
+            ++stats.fetchFailed;
             node.setFollowed(false);
             node.setReason(Reason.OtherBadStatus);
           }
@@ -179,7 +202,7 @@ public class Crawl
 
 
       } catch (Exception e) {
-        System.err.println("For '" + url + "': " + e.getMessage());
+        System.err.println("For '" + url + "': " + e.getMessage());      // todo this shouldn't be needed, and it's wrong
       }
     }
   }
