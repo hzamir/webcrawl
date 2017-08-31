@@ -1,4 +1,4 @@
-package com.baliset.webcrawl;
+package com.baliset.webcrawl.model;
 
 import java.util.*;
 

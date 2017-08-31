@@ -1,4 +1,4 @@
-package com.baliset.webcrawl;
+package com.baliset.webcrawl.model;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.*;
 
@@ -21,6 +21,7 @@ public class CrawlNode
   public Reason getReason()           { return reason; }
   public Set<CrawlNode> getChildren() { return children; }
 
+  @JacksonXmlElementWrapper(useWrapping = false)
   @JacksonXmlProperty(localName = "node")
   private Set<CrawlNode> children;
 

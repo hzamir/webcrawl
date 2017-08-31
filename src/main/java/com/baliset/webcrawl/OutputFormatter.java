@@ -1,5 +1,6 @@
 package com.baliset.webcrawl;
 
+import com.baliset.webcrawl.model.*;
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.core.*;
 import com.fasterxml.jackson.databind.*;

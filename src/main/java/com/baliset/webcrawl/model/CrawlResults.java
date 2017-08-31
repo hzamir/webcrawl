@@ -1,4 +1,6 @@
-package com.baliset.webcrawl;
+package com.baliset.webcrawl.model;
+
+import com.baliset.webcrawl.*;
 
 public class CrawlResults
 {

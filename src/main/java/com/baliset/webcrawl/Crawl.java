@@ -1,5 +1,6 @@
 package com.baliset.webcrawl;
 
+import com.baliset.webcrawl.model.*;
 import org.jsoup.*;
 import org.jsoup.nodes.*;
 import org.jsoup.select.*;
