@@ -27,13 +27,4 @@ public class Issues
     return r;
   }
 
-
-  public void printReasons()
-  {
-    if (notFollowedReasons.size() == 0)
-      return;
-    System.err.println("Issues Encountered:");
-    notFollowedReasons.forEach((k, v) -> System.err.printf("%s: %d\n", k.name(), v));
-  }
-
 }

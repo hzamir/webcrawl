@@ -1,6 +1,5 @@
 package com.baliset.webcrawl;
 
-import org.springframework.beans.factory.*;
 import org.springframework.boot.context.properties.*;
 import org.springframework.context.annotation.*;
 
@@ -8,7 +7,7 @@ import java.util.*;
 
 @Configuration
 @ConfigurationProperties(prefix = "webcrawl.enums")
-public class EnumsConfig implements InitializingBean
+public class EnumsConfig
 {
   private List<String> useragents = new ArrayList<>();
   private List<String> outputFormats = new ArrayList<>();
@@ -29,12 +28,5 @@ public class EnumsConfig implements InitializingBean
   public int getMaxDepth()         { return maxDepth;  }
   public void setMaxMinutes(int v) { maxMinutes = v;   }
   public void setMaxDepth(int v)   { maxDepth = v;     }
-  
-
-  @Override
-  public void afterPropertiesSet() throws Exception
-  {
-    System.out.println("deleteme");
-  }
 }
 

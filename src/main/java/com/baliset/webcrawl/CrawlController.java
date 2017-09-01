@@ -4,11 +4,15 @@ import de.felixroske.jfxsupport.*;
 import javafx.concurrent.*;
 import javafx.fxml.*;
 import javafx.scene.control.*;
+import org.slf4j.*;
 import org.springframework.beans.factory.annotation.*;
 
 @FXMLController
 public class CrawlController
 {
+  private static final Logger logger = LoggerFactory.getLogger(CrawlController.class);
+
+
   private CrawlConfig config;
   private EnumsConfig enumsConfig;
 
@@ -99,7 +103,7 @@ public class CrawlController
 
   private void p()
   {
-    System.out.println(config.toString());
+    logger.info(config.toString());
   }
 
   private void crawlStart()
@@ -119,7 +123,6 @@ public class CrawlController
 
     mytask.messageProperty().addListener((observable, oldValue, newValue) -> {
       if(!th.isAlive()) {
-        System.out.println("donem cancelling");
         mytask.cancel();
         progressBar.progressProperty().unbind();
         progressBar.setProgress(1.0);
@@ -163,9 +166,7 @@ public class CrawlController
 
     outputFormat.getSelectionModel().selectedItemProperty().addListener((observable, ov, v) -> config.setOutputFormat(v));
 
-    outputPath.textProperty().addListener((observable, ov, v) -> {
-      config.setOutputPath(v);
-    });
+    outputPath.textProperty().addListener((observable, ov, v) -> config.setOutputPath(v));
 
     depthLimit.valueProperty().addListener((observable, ov, v) -> {
       config.setDepthLimit(v.intValue());

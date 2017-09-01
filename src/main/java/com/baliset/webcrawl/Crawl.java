@@ -52,13 +52,12 @@ public class Crawl
   {
     outputFormatter.selectFormat(config.getOutputFormat());
     path += "/" + config.getInitialDomain() + "." + config.getOutputFormat();
-    System.out.println("Writing to file: " + path);
+    logger.info("Writing to file: " + path);
     try(BufferedWriter writer = Files.newBufferedWriter(Paths.get(path))) {
       outputFormatter.print(crawlResults, writer);
     } catch (IOException e) {
-      e.printStackTrace();
+      logger.error("Failed to write output", e);
     }    // the file will be automatically closed
-
 
   }
 
@@ -212,9 +211,8 @@ public class Crawl
           node.setReason(Reason.UnsupportedFormat);
         }
 
-
       } catch (Exception e) {
-        System.err.println("For '" + url + "': " + e.getMessage());      // todo this shouldn't be needed, and it's wrong
+        logger.error("Unexpected Error", e);
       }
     }
   }
