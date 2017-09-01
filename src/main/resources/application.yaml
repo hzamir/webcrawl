@@ -30,6 +30,7 @@ webcrawl:
       - Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.24) Gecko/20111103 LYnX/2.4 #lynx text based browser
   defaults:   # these are the configuration defaults, the UI allows overriding them
     outputFormat: xml
+    outputPath: /Desktop  #this path is appended to the user's home directory to create a starting point
     useragent:  ${webcrawl.enums.useragents[0]}
     initialUrl: http://wiprodigital.com
     stayInDomain: true                 # stay in domain (don't go to another domain)

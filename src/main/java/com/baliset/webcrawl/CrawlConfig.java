@@ -1,6 +1,5 @@
 package com.baliset.webcrawl;
 
-import org.springframework.beans.factory.*;
 import org.springframework.boot.context.properties.*;
 import org.springframework.context.annotation.*;
 
@@ -9,7 +8,7 @@ import java.util.*;
 
 @Configuration
 @ConfigurationProperties(prefix = "webcrawl.defaults")
-public class CrawlConfig implements InitializingBean
+public class CrawlConfig
 {
   private String  useragent;
   private String  initialUrl;
@@ -18,6 +17,7 @@ public class CrawlConfig implements InitializingBean
   private int     minutesLimit;     // max time
   private int     depthLimit;       // max depth
   private String outputFormat;      // xml, yaml, or json
+  private String outputPath;        // destination, not that it is configured relative, but rewritten in memory as absolute
 
   private List<String> linkTypes = new ArrayList<>();
 
@@ -111,16 +111,11 @@ public class CrawlConfig implements InitializingBean
     this.useragent = useragent;
   }
 
-  @Override
-  public void afterPropertiesSet() throws Exception
-  {
-    System.out.print("hi\n");
-  }
 
-  public void setOutputFormat(String s) { outputFormat = s;}
-  public String getOutputFormat()
-  {
-    return outputFormat;
-  }
+  public void setOutputFormat(String s) { outputFormat = s;    }
+  public String getOutputFormat()       { return outputFormat; }
+  public void setOutputPath(String s)   { outputPath = s;      }
+  public String getOutputPath()         { return outputPath;   }
+
 }
 
