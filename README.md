@@ -1,17 +1,26 @@
-# webcrawl exercise
+# Webcrawl Exercise
 
-# 1. how to build it (requires maven and java 1.8)
+# 1. how to build it
 
-(from the webcrawl directory)
+Requirements
+* Java 1.8
+* Maven 3.3 or better (but tested with 3.5)
+
+```bash
+# from the webcrawl directory in a terminal
 mvn clean package
+```
 
-# 2. how to run it (it requires Java 1.8)
+# 2. how to run it
 
-(Note: while the jar is directly executable at least on a Mac, running it directly is temporarily broken.)
+> Note: while the jar is directly executable at least on a Mac, running it directly is temporarily broken. 
+> This feature still works on the branch "older-swing-based-version" (which is not as feature-complete, but demonstrates the principle).
 
-(from the webcrawl directory in a terminal)
+
+```bash
+# from the webcrawl directory in a terminal
 mvn spring-boot:run
- 
+```
 
 (If you put the application.yaml file in the same directory as the executable, you can edit the defaults that it uses
  Any uneditable values in the UI (currently specifying which types of links to follow)can be edited there prior to execution.)
