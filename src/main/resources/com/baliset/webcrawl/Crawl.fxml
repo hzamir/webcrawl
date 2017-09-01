@@ -27,13 +27,14 @@
 
   <Label alignment="CENTER_RIGHT" layoutX="21.0" layoutY="176.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="17.0" prefWidth="100.0" text="Output Format:" textAlignment="RIGHT" />
   <ChoiceBox fx:id="outputFormat" layoutX="128.0" layoutY="171.0" prefHeight="27.0" prefWidth="71.0" />
+  <TextField fx:id="outputPath" layoutX="208.0" layoutY="171.0" prefHeight="27.0" prefWidth="229.0" promptText="output path" />
 
   <Label alignment="CENTER_RIGHT" layoutX="21.0" layoutY="211.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="17.0" prefWidth="100.0" text="Depth Limit:" textAlignment="RIGHT" />
-  <TextField fx:id="depthText" layoutX="128.0" layoutY="206.0" prefHeight="27.0" prefWidth="49.0" editable="false"/>
+  <TextField fx:id="depthText" editable="false" layoutX="128.0" layoutY="206.0" prefHeight="27.0" prefWidth="49.0" />
   <Slider fx:id="depthLimit" layoutX="181.0" layoutY="206.0" prefHeight="27.0" prefWidth="256.0" />
 
   <Label alignment="CENTER_RIGHT" layoutX="21.0" layoutY="247.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="17.0" prefWidth="100.0" text="Minutes Limit:" textAlignment="RIGHT" />
-  <TextField fx:id="minutesText" layoutX="128.0" layoutY="242.0" prefHeight="27.0" prefWidth="49.0" editable="false"/>
+  <TextField fx:id="minutesText" editable="false" layoutX="128.0" layoutY="242.0" prefHeight="27.0" prefWidth="49.0" />
   <Slider fx:id="minutesLimit" layoutX="181.0" layoutY="242.0" prefHeight="27.0" prefWidth="256.0" />
 
   <Label visible="false" fx:id="progressLabel" alignment="CENTER_RIGHT" layoutX="21.0" layoutY="282.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="17.0" prefWidth="100.0" text="Progress:" textAlignment="RIGHT" />

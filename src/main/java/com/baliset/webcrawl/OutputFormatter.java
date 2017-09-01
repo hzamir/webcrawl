@@ -7,6 +7,8 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.dataformat.xml.*;
 import com.fasterxml.jackson.dataformat.yaml.*;
 
+import java.io.*;
+
 public class OutputFormatter
 {
   private ObjectMapper objectMapper;
@@ -26,13 +28,16 @@ public class OutputFormatter
       objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
   }
-  
-  public void print(CrawlResults crawlResults)
+
+
+
+  public void print(CrawlResults crawlResults, Writer writer)
   {
     try {
-      String output = objectMapper.writeValueAsString(crawlResults);
-      System.out.print(output);
+      objectMapper.writeValue(writer, crawlResults);
     } catch (JsonProcessingException e) {
+      e.printStackTrace();
+    } catch (IOException e) {
       e.printStackTrace();
     }
   }

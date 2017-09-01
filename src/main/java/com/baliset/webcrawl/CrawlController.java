@@ -19,42 +19,49 @@ public class CrawlController
     this.enumsConfig = enumsConfig;
   }
 
-  @FXML
-  private TextField initialUrl;
-  @FXML
-  private TextField initialDomain;
-  @FXML
-  private ChoiceBox<String> outputFormat;      // xml, yaml, or json
 
-  @FXML
-  private CheckBox stayInDomain;     // stay in domain (don't go to another domain)
-  @FXML
-  private CheckBox allowSubdomains;  // if inside domain are subdomains ok?
-  @FXML
-  private Slider minutesLimit;     // max time
-  @FXML
-  private Slider depthLimit;       // max depth
-
-  @FXML
-  private ComboBox<String> userAgent;      // xml, yaml, or json
+  @FXML private TextField initialUrl;
+  @FXML private TextField initialDomain;
+  @FXML private ChoiceBox<String> outputFormat;      // xml, yaml, or json
+  @FXML private TextField outputPath;
 
 
-  @FXML
-  private TextField minutesText;
-  @FXML
-  private TextField depthText;
+  @FXML private CheckBox stayInDomain;     // stay in domain (don't go to another domain)
+  @FXML private CheckBox allowSubdomains;  // if inside domain are subdomains ok?
+  @FXML private Slider minutesLimit;     // max time
+  @FXML private Slider depthLimit;       // max depth
 
-  @FXML
-  private Button run;
+  @FXML private ComboBox<String> userAgent;      // xml, yaml, or json
 
-  @FXML
-  private Label progressLabel;
-  @FXML
-  private ProgressBar progressBar;
+
+  @FXML private TextField minutesText;
+  @FXML private TextField depthText;
+
+  @FXML private Button run;
+
+  @FXML private Label progressLabel;
+  @FXML private ProgressBar progressBar;
 
   private Crawl worker;
   private Task mytask;
 
+
+
+  /*
+
+
+ FileChooser fileChooser = new FileChooser();
+ fileChooser.setTitle("Open Resource File");
+ fileChooser.getExtensionFilters().addAll(
+         new ExtensionFilter("Text Files", "*.txt"),
+         new ExtensionFilter("Image Files", "*.png", "*.jpg", "*.gif"),
+         new ExtensionFilter("Audio Files", "*.wav", "*.mp3", "*.aac"),
+         new ExtensionFilter("All Files", "*.*"));
+ File selectedFile = fileChooser.showOpenDialog(mainStage);
+ if (selectedFile != null) {
+    mainStage.display(selectedFile);
+ }
+   */
   private void populate()
   {
     initialUrl.textProperty().set(config.getInitialUrl());
@@ -64,6 +71,10 @@ public class CrawlController
     allowSubdomains.selectedProperty().set(config.isAllowSubdomains());
 
     outputFormat.getItems().addAll(enumsConfig.getOutputFormats());
+
+    String absoluteOutputPath = System.getProperty("user.home")+config.getOutputPath();
+    config.setOutputPath(absoluteOutputPath);
+    outputPath.textProperty().set(absoluteOutputPath); // prior bug fixed in java8 (see bugs.java.com/view_bug.do?bug_id=6519127)
 
     outputFormat.setValue(config.getOutputFormat());
     int mins = config.getMinutesLimit();
@@ -151,6 +162,10 @@ public class CrawlController
     allowSubdomains.selectedProperty().addListener((observable, ov, v) -> config.setAllowSubdomains(v));
 
     outputFormat.getSelectionModel().selectedItemProperty().addListener((observable, ov, v) -> config.setOutputFormat(v));
+
+    outputPath.textProperty().addListener((observable, ov, v) -> {
+      config.setOutputPath(v);
+    });
 
     depthLimit.valueProperty().addListener((observable, ov, v) -> {
       config.setDepthLimit(v.intValue());
