@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="322.0" prefWidth="680.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.baliset.webcrawl.CrawlController">
+  <ImageView id="logo" fitHeight="202.0" fitWidth="198.0" layoutX="458.0" layoutY="10.0" pickOnBounds="true" preserveRatio="true">
+    <effect>
+      <Glow level="0.6" />
+    </effect>
+    <Image url="@spider.png" />
+  </ImageView>
+  <Label alignment="CENTER_RIGHT" layoutX="21.0" layoutY="38.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="17.0" prefWidth="100.0" text="Url:" textAlignment="RIGHT" />
+  <TextField id="initialUrl" fx:id="initialUrl" layoutX="128.0" layoutY="33.0" prefHeight="27.0" prefWidth="309.0" />
+  <Label alignment="CENTER_RIGHT" layoutX="21.0" layoutY="74.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="17.0" prefWidth="100.0" text="Domain:" textAlignment="RIGHT" />
+  <TextField id="initialDomain" fx:id="initialDomain" editable="false" layoutX="128.0" layoutY="69.0" prefHeight="27.0" prefWidth="309.0" />
+
+
+  <Label layoutX="152.0" layoutY="106.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="17.0" prefWidth="124.0" text="Stay inside domain" />
+  <CheckBox fx:id="stayInDomain" layoutX="128.0" layoutY="101.0" prefHeight="27.0" prefWidth="14.0" />
+  <Label layoutX="311.0" layoutY="106.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="17.0" prefWidth="124.0" text="Include Subdomains" textAlignment="RIGHT" />
+  <CheckBox fx:id="allowSubdomains" layoutX="287.0" layoutY="101.0" prefHeight="27.0" prefWidth="11.0" />
+
+  <Label alignment="CENTER_RIGHT" layoutX="21.0" layoutY="141.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="17.0" prefWidth="100.0" text="UserAgent:" textAlignment="RIGHT" />
+  <ComboBox fx:id="userAgent" layoutX="128.0" layoutY="136.0" prefHeight="27.0" prefWidth="309.0" />
+
+  <Label alignment="CENTER_RIGHT" layoutX="21.0" layoutY="176.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="17.0" prefWidth="100.0" text="Output Format:" textAlignment="RIGHT" />
+  <ChoiceBox fx:id="outputFormat" layoutX="128.0" layoutY="171.0" prefHeight="27.0" prefWidth="71.0" />
+
+  <Label alignment="CENTER_RIGHT" layoutX="21.0" layoutY="211.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="17.0" prefWidth="100.0" text="Depth Limit:" textAlignment="RIGHT" />
+  <TextField fx:id="depthText" layoutX="128.0" layoutY="206.0" prefHeight="27.0" prefWidth="49.0" editable="false"/>
+  <Slider fx:id="depthLimit" layoutX="181.0" layoutY="206.0" prefHeight="27.0" prefWidth="256.0" />
+
+  <Label alignment="CENTER_RIGHT" layoutX="21.0" layoutY="247.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="17.0" prefWidth="100.0" text="Minutes Limit:" textAlignment="RIGHT" />
+  <TextField fx:id="minutesText" layoutX="128.0" layoutY="242.0" prefHeight="27.0" prefWidth="49.0" editable="false"/>
+  <Slider fx:id="minutesLimit" layoutX="181.0" layoutY="242.0" prefHeight="27.0" prefWidth="256.0" />
+
+  <Label alignment="CENTER_RIGHT" layoutX="21.0" layoutY="282.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="17.0" prefWidth="100.0" text="Progress:" textAlignment="RIGHT" />
+  <ProgressBar layoutX="128.0" layoutY="282.0" prefHeight="20.0" prefWidth="309.0" progress="0.0" />
+
+  <Button fx:id="run" layoutX="499.0" layoutY="242.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="116.0" text="Start" />
+
+
+
+</Pane>

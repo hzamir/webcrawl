@@ -90,13 +90,13 @@ public class CrawlConfig implements InitializingBean
   }
   public String getInitialDomain()
   {
-         return initialDomain;
+    return initialDomain;
   }
 
   public String toString()
   {
-    return String.format("{url:%s, domain: %s, stay:%s, follow:%s, depth:%d, minutes:%d}",
-        initialUrl, initialDomain, stayInDomain, allowSubdomains, depthLimit, minutesLimit
+    return String.format("{url:%s, domain: %s, fmt:%s, stay:%s, follow:%s, depth:%d, minutes:%d}",
+        initialUrl, initialDomain, outputFormat, stayInDomain, allowSubdomains, depthLimit, minutesLimit
     );
 
   }
