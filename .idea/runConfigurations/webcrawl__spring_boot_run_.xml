@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="webcrawler [spring-boot:run]" type="MavenRunConfiguration" factoryName="Maven" singleton="true">
+  <configuration default="false" name="webcrawl [spring-boot:run]" type="MavenRunConfiguration" factoryName="Maven" singleton="true">
     <MavenSettings>
       <option name="myGeneralSettings" />
       <option name="myRunnerSettings" />

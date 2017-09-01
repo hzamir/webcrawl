@@ -7,6 +7,6 @@ public class CrawlSplash extends SplashScreen
   @Override
   public String getImagePath()
   {
-    return "./spider.png";
+    return "/com/baliset/webcrawl/spider.png";
   }
 }

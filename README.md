@@ -1,23 +1,23 @@
-# webcrawler exercise
+# webcrawl exercise
 
-# 1. how to build it
+# 1. how to build it (requires maven and java 1.8)
 
-Assuming for now we will write it as a spring-boot java microservice (which might be not a good choice)
-
+(from the webcrawl directory)
 mvn clean package
 
 # 2. how to run it (it requires Java 1.8)
-From a terminal command line
 
-cd to the target directory from the above build
+(Note: while the jar is directly executable at least on a Mac, running it directly is temporarily broken.)
 
-java -jar webcrawler.jar
+(from the webcrawl directory in a terminal)
+mvn spring-boot:run
+ 
 
 (If you put the application.yaml file in the same directory as the executable, you can edit the defaults that it uses
- Any uneditable values in the UI (currently specifying which types of links to follow)can be edited there prior to execution.
-)
+ Any uneditable values in the UI (currently specifying which types of links to follow)can be edited there prior to execution.)
 
-# 3. areas of expansion (and I haven't even started yet!)
+# 3. areas of expansion
+* List the just created files and offer to open them directly in a browser
 * Can be packaged as an App on mac, exe on windows, etc.
 * Offer headless option to run from command line without editing the parameters
 * These could potentially run for a long time, so some intermittent updates status updates would be necessary

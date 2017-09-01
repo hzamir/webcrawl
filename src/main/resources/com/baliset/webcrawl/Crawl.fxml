@@ -9,7 +9,7 @@
     <effect>
       <Glow level="0.6" />
     </effect>
-    <Image url="@spider.png" />
+    <Image url="@./spider.png" />
   </ImageView>
   <Label alignment="CENTER_RIGHT" layoutX="21.0" layoutY="38.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="17.0" prefWidth="100.0" text="Url:" textAlignment="RIGHT" />
   <TextField id="initialUrl" fx:id="initialUrl" layoutX="128.0" layoutY="33.0" prefHeight="27.0" prefWidth="309.0" />
