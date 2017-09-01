@@ -6,7 +6,9 @@ import org.jsoup.nodes.*;
 import org.jsoup.select.*;
 import org.slf4j.*;
 
+import java.io.*;
 import java.net.*;
+import java.nio.file.*;
 import java.time.*;
 import java.util.*;
 
@@ -44,25 +46,34 @@ public class Crawl
     return String.format("%d:%d:%d", hours,minutes,seconds);
   }
 
+
+
+  private void printToFile(String path, CrawlResults crawlResults)
+  {
+    outputFormatter.selectFormat(config.getOutputFormat());
+    path += "/" + config.getInitialDomain() + "." + config.getOutputFormat();
+    System.out.println("Writing to file: " + path);
+    try(BufferedWriter writer = Files.newBufferedWriter(Paths.get(path))) {
+      outputFormatter.print(crawlResults, writer);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }    // the file will be automatically closed
+
+
+  }
+
   public void crawl()
   {
     startTime = System.currentTimeMillis();
     Instant startInstant = Instant.now();
-
-
+    
     getPageLinks(start, config.getInitialUrl(), 0);
 
     stats.elapsedTime = durationFormat(Duration.between(startInstant, Instant.now()));
 
-
-
-
-
     CrawlResults crawlResults = new CrawlResults(config, stats, issues, start);
+    printToFile(config.getOutputPath(), crawlResults);
 
-
-    outputFormatter.selectFormat(config.getOutputFormat());
-    outputFormatter.print(crawlResults);
   }
 
   private boolean shouldFollowProtocol(String protocol)
