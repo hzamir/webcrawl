@@ -12,7 +12,7 @@ spring:
 javafx:
   title: ${app.name}
   appicons:
-    - ./spider.png
+    - /com/baliset/webcrawl/spider.png
 
 webcrawl:
   enums:  # these provide choices for constained values, or min/max values
