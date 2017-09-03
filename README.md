@@ -13,14 +13,11 @@ mvn clean package
 
 # 2. how to run it
 
-> Note: while the jar is directly executable at least on a Mac, running it directly is temporarily broken. 
-> This feature still works on the branch "older-swing-based-version" (which is not as feature-complete, but demonstrates the principle).
-
-
 ```bash
-# from the webcrawl directory in a terminal
-mvn spring-boot:run
+# from the webcrawl directory (it is directly executable on a mac
+target/webcrawl-1.0.jar
 ```
+
 
 (If you put the application.yaml file in the same directory as the executable, you can edit the defaults that it uses
  Any uneditable values in the UI (currently specifying which types of links to follow)can be edited there prior to execution.)
