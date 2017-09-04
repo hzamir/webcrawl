@@ -17,6 +17,7 @@ public class Crawl
   private static final Logger logger = LoggerFactory.getLogger(Crawl.class);
 
   private CrawlConfig config;
+  private String outputPath;
 
   private Map<String, CrawlNode> links;
   private CrawlNode start;     // place from which we trace all other nodes while crawling
@@ -28,8 +29,9 @@ public class Crawl
   private long startTime;
   private boolean stop;
 
-  public Crawl(CrawlConfig config) {
+  public Crawl(CrawlConfig config, String outputPath) {
     this.config = config;
+    this.outputPath = outputPath;
     logger.info(config.toString());
     links = new HashMap<>();
     stats= new Stats();
@@ -48,17 +50,15 @@ public class Crawl
 
 
 
-  private void printToFile(String path, CrawlResults crawlResults)
+  private void printToFile(CrawlResults crawlResults)
   {
     outputFormatter.selectFormat(config.getOutputFormat());
-    path += "/" + config.getInitialDomain() + "." + config.getOutputFormat();
-    logger.info("Writing to file: " + path);
-    try(BufferedWriter writer = Files.newBufferedWriter(Paths.get(path))) {
+    logger.info("Writing to file: " + outputPath);
+    try(BufferedWriter writer = Files.newBufferedWriter(Paths.get(outputPath))) {
       outputFormatter.print(crawlResults, writer);
     } catch (IOException e) {
       logger.error("Failed to write output", e);
     }    // the file will be automatically closed
-
   }
 
   public void crawl()
@@ -71,7 +71,7 @@ public class Crawl
     stats.elapsedTime = durationFormat(Duration.between(startInstant, Instant.now()));
 
     CrawlResults crawlResults = new CrawlResults(config, stats, issues, start);
-    printToFile(config.getOutputPath(), crawlResults);
+    printToFile(crawlResults);
 
   }
 
