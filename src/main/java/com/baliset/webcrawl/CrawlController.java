@@ -158,8 +158,8 @@ public class CrawlController
   private void crawlCompleted()
   {
     progressBar.progressProperty().unbind();
-    // progressLabel.setVisible(false);
-    // progressBar.setVisible(false);
+     progressLabel.setVisible(false);
+     progressBar.setVisible(false);
     run.textProperty().set("Start");
 
     if(worker != null) {
