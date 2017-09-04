@@ -4,12 +4,12 @@
 <?import javafx.scene.effect.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="322.0" prefWidth="680.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.baliset.webcrawl.CrawlController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="413.0" prefWidth="680.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.baliset.webcrawl.CrawlController">
   <ImageView id="logo" fitHeight="202.0" fitWidth="198.0" layoutX="458.0" layoutY="10.0" pickOnBounds="true" preserveRatio="true">
     <effect>
       <Glow level="0.6" />
     </effect>
-    <Image url="@./spider.png" />
+    <Image url="@/com/baliset/webcrawl/spider.png" />
   </ImageView>
   <Label alignment="CENTER_RIGHT" layoutX="21.0" layoutY="38.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="17.0" prefWidth="100.0" text="Url:" textAlignment="RIGHT" />
   <TextField id="initialUrl" fx:id="initialUrl" layoutX="128.0" layoutY="33.0" prefHeight="27.0" prefWidth="309.0" />
@@ -37,8 +37,12 @@
   <TextField fx:id="minutesText" editable="false" layoutX="128.0" layoutY="242.0" prefHeight="27.0" prefWidth="49.0" />
   <Slider fx:id="minutesLimit" layoutX="181.0" layoutY="242.0" prefHeight="27.0" prefWidth="256.0" />
 
-  <Label visible="false" fx:id="progressLabel" alignment="CENTER_RIGHT" layoutX="21.0" layoutY="282.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="17.0" prefWidth="100.0" text="Progress:" textAlignment="RIGHT" />
-  <ProgressBar visible="false" fx:id="progressBar" layoutX="128.0" layoutY="282.0" prefHeight="20.0" prefWidth="309.0" progress="0.0" />
+  <Label fx:id="progressLabel" alignment="CENTER_RIGHT" layoutX="21.0" layoutY="282.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="17.0" prefWidth="100.0" text="Progress:" textAlignment="RIGHT" visible="false" />
+  <ProgressBar fx:id="progressBar" layoutX="128.0" layoutY="282.0" prefHeight="20.0" prefWidth="309.0" progress="0.0" visible="false" />
+
+  <Label alignment="CENTER_RIGHT" layoutX="21.0" layoutY="309.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="17.0" prefWidth="100.0" text="Saved Results:" textAlignment="RIGHT" />
+  <ListView fx:id="recentlySaved" layoutX="128.0" layoutY="309.0" prefHeight="85.0" prefWidth="491.0" />
+
 
   <Button fx:id="run" layoutX="499.0" layoutY="242.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="116.0" text="Start" />
 

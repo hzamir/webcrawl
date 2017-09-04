@@ -17,7 +17,7 @@ public class CrawlConfig
   private int     minutesLimit;     // max time
   private int     depthLimit;       // max depth
   private String outputFormat;      // xml, yaml, or json
-  private String outputPath;        // destination, not that it is configured relative, but rewritten in memory as absolute
+  private String outputDir;        // destination, not that it is configured relative, but rewritten in memory as absolute
 
   private List<String> linkTypes = new ArrayList<>();
 
@@ -95,7 +95,7 @@ public class CrawlConfig
 
   public String toString()
   {
-    return String.format("{url:%s, domain: %s, fmt:%s, stay:%s, follow:%s, depth:%d, minutes:%d}",
+    return String.format("{url:'%s', domain: '%s', fmt:'%s', stay:%s, follow:%s, depth:%d, minutes:%d}",
         initialUrl, initialDomain, outputFormat, stayInDomain, allowSubdomains, depthLimit, minutesLimit
     );
 
@@ -114,8 +114,7 @@ public class CrawlConfig
 
   public void setOutputFormat(String s) { outputFormat = s;    }
   public String getOutputFormat()       { return outputFormat; }
-  public void setOutputPath(String s)   { outputPath = s;      }
-  public String getOutputPath()         { return outputPath;   }
-
+  public void setOutputDir(String s)    { outputDir = s;      }
+  public String getOutputDir()          { return outputDir;   }
 }
 

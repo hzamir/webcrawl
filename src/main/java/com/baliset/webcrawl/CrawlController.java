@@ -1,5 +1,6 @@
 package com.baliset.webcrawl;
 
+import com.baliset.util.*;
 import de.felixroske.jfxsupport.*;
 import javafx.concurrent.*;
 import javafx.fxml.*;
@@ -7,20 +8,29 @@ import javafx.scene.control.*;
 import org.slf4j.*;
 import org.springframework.beans.factory.annotation.*;
 
+import java.text.*;
+import java.util.*;
+
+
 @FXMLController
 public class CrawlController
 {
   private static final Logger logger = LoggerFactory.getLogger(CrawlController.class);
 
+  private SimpleDateFormat simpleDateFormat;
 
   private CrawlConfig config;
   private EnumsConfig enumsConfig;
+  private Capabilities capabilities;  // knows how to (and whether it can) do some tasks in OS specific way
+  private String derivedFileName;
 
   @Autowired
-  public CrawlController(CrawlConfig config, EnumsConfig enumsConfig)
+  public CrawlController(CrawlConfig config, EnumsConfig enumsConfig, Capabilities capabilities)
   {
+    this.simpleDateFormat = new SimpleDateFormat("yyyyMMdd-hhmmss");
     this.config = config;
     this.enumsConfig = enumsConfig;
+    this.capabilities = capabilities;
   }
 
 
@@ -45,11 +55,22 @@ public class CrawlController
 
   @FXML private Label progressLabel;
   @FXML private ProgressBar progressBar;
+  @FXML private ListView<String> recentlySaved;
 
   private Crawl worker;
-  private Task mytask;
+  private Task progressTask;
 
 
+  private String deriveFileName()
+  {
+    derivedFileName = String.format("%s/%s-%s.%s",
+        config.getOutputDir(),
+        simpleDateFormat.format(new Date()),
+        config.getInitialDomain(),
+        config.getOutputFormat()
+    );
+    return derivedFileName;
+  }
 
   /*
 
@@ -76,8 +97,8 @@ public class CrawlController
 
     outputFormat.getItems().addAll(enumsConfig.getOutputFormats());
 
-    String absoluteOutputPath = System.getProperty("user.home")+config.getOutputPath();
-    config.setOutputPath(absoluteOutputPath);
+    String absoluteOutputPath = System.getProperty("user.home")+config.getOutputDir();
+    config.setOutputDir(absoluteOutputPath);
     outputPath.textProperty().set(absoluteOutputPath); // prior bug fixed in java8 (see bugs.java.com/view_bug.do?bug_id=6519127)
 
     outputFormat.setValue(config.getOutputFormat());
@@ -109,7 +130,7 @@ public class CrawlController
   private void crawlStart()
   {
     run.textProperty().set("Stop");
-    worker = new Crawl(config);
+    worker = new Crawl(config, deriveFileName());
     Thread th = new Thread(worker::crawl, "CrawlThread");
     th.start();
 
@@ -118,35 +139,41 @@ public class CrawlController
     progressLabel.setVisible(true);
     progressBar.setVisible(true);
 
-    mytask =  ProgressUtil.createProgressTask(100, config.getMinutesLimit()*60_000);
-    progressBar.progressProperty().bind(mytask.progressProperty());
+    progressTask =  ProgressUtil.createProgressTask(100, config.getMinutesLimit()*60_000);
+    progressBar.progressProperty().bind(progressTask.progressProperty());
 
-    mytask.messageProperty().addListener((observable, oldValue, newValue) -> {
+    progressTask.messageProperty().addListener((observable, oldValue, newValue) -> {
       if(!th.isAlive()) {
-        mytask.cancel();
+        progressTask.cancel();
         progressBar.progressProperty().unbind();
         progressBar.setProgress(1.0);
         crawlCompleted();
       }
     });
 
-    new Thread(mytask).start();
+    new Thread(progressTask).start();
 
   }
 
   private void crawlCompleted()
   {
     progressBar.progressProperty().unbind();
-//    progressLabel.setVisible(false);
-//    progressBar.setVisible(false);
+     progressLabel.setVisible(false);
+     progressBar.setVisible(false);
     run.textProperty().set("Start");
-  }
 
+    if(worker != null) {
+      worker.stop();
+      worker = null;
+
+      recentlySaved.getItems().removeAll(derivedFileName);      // only list item with same name once, since file is overwritten
+      recentlySaved.getItems().add(0, derivedFileName);
+    }
+  }
+  
   private void crawlStop()
   {
     crawlCompleted();
-    worker.stop();
-    worker = null;
   }
 
 
@@ -166,7 +193,7 @@ public class CrawlController
 
     outputFormat.getSelectionModel().selectedItemProperty().addListener((observable, ov, v) -> config.setOutputFormat(v));
 
-    outputPath.textProperty().addListener((observable, ov, v) -> config.setOutputPath(v));
+    outputPath.textProperty().addListener((observable, ov, v) -> config.setOutputDir(v));
 
     depthLimit.valueProperty().addListener((observable, ov, v) -> {
       config.setDepthLimit(v.intValue());
@@ -188,6 +215,15 @@ public class CrawlController
         crawlStop();
       }
     });
+
+    recentlySaved.getSelectionModel().selectedItemProperty().addListener((observable, ov, v) ->
+      {
+        if(capabilities.revealPathCapability() != null)
+        {
+          capabilities.revealPath(v);
+        }
+      }
+    );
   }
 
   public void initialize()
