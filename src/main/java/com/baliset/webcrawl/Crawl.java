@@ -20,6 +20,9 @@ public class Crawl
   private String outputPath;
 
   private Map<String, CrawlNode> links;
+  private Queue<WorkItem>        queue;
+
+
   private CrawlNode start;     // place from which we trace all other nodes while crawling
   private Issues issues;
   private Stats stats;
@@ -34,6 +37,7 @@ public class Crawl
     this.outputPath = outputPath;
     logger.info(config.toString());
     links = new HashMap<>();
+    queue = new LinkedList<>();
     stats= new Stats();
     stats.terminationCode = TerminationCode.CrawlCompleted;
     issues = new Issues();
@@ -65,8 +69,11 @@ public class Crawl
   {
     startTime = System.currentTimeMillis();
     Instant startInstant = Instant.now();
-    
+
+
     getPageLinks(start, config.getInitialUrl(), 0);
+
+    doWork();
 
     stats.elapsedTime = durationFormat(Duration.between(startInstant, Instant.now()));
 
@@ -134,6 +141,7 @@ public class Crawl
 
   private CrawlNode add(String url)
   {
+
     CrawlNode node = new CrawlNode(url);
     ++stats.unique;
 
@@ -145,16 +153,30 @@ public class Crawl
   }
 
 
+  private void doWork()
+  {
+      int count;
+
+      while((count = queue.size()) > 0)
+      {
+          WorkItem peek = queue.peek();
+          logger.info("level " + peek.getDepth() + " contains " + count + " items");
+          for(int i = 0; i < count; ++i) {
+            WorkItem item = queue.remove();
+            getPageLinks(item.getNode(), item.getAttrKey(), item.getDepth());
+          }
+      }
+  }
+
+
   private void getLinkSpec(CrawlNode node,int depth, Document document, String spec)
   {
     Elements linksOnPage = document.select(spec);
-
-    String attributeKey = "abs:" +  spec.split("[\\[\\]]")[1];
+    String attributeKey = "abs:" +    spec.split("[\\[\\]]")[1];
 
     for (Element page : linksOnPage) {
-      getPageLinks(node, page.attr(attributeKey), depth);
+      queue.add(new WorkItem(node,  page.attr(attributeKey), depth));  // bread first search queue
     }
-
   }
 
 
