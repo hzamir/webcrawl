@@ -9,7 +9,6 @@ import org.slf4j.*;
 import java.io.*;
 import java.net.*;
 import java.nio.file.*;
-import java.time.*;
 import java.util.*;
 
 public class Crawl
@@ -21,7 +20,6 @@ public class Crawl
 
   private Map<String, CrawlNode> links;
   private Queue<WorkItem>        queue;
-  private Map<String, Integer> domainStats;
 
 
   private CrawlNode start;     // place from which we trace all other nodes while crawling
@@ -39,19 +37,9 @@ public class Crawl
     logger.info(config.toString());
     links = new HashMap<>();
     queue = new LinkedList<>();
-    domainStats = new HashMap<>();
     stats= new Stats();
-    stats.terminationCode = TerminationCode.CrawlCompleted;
     issues = new Issues();
     outputFormatter = new OutputFormatter();
-  }
-
-  private String durationFormat(Duration duration)
-  {
-    long hours = duration.toHours();
-    int minutes = (int) ((duration.getSeconds() % (60 * 60)) / 60);
-    int seconds = (int) (duration.getSeconds() % 60);
-    return String.format("%d:%d:%d", hours,minutes,seconds);
   }
 
 
@@ -69,24 +57,13 @@ public class Crawl
 
   public void crawl()
   {
-    startTime = System.currentTimeMillis();
-    Instant startInstant = Instant.now();
-
+    startTime = stats.start();
 
     getPageLinks(start, config.getInitialUrl(), 0);
 
     doWork();
 
-    stats.elapsedTime = durationFormat(Duration.between(startInstant, Instant.now()));
-
-    List<DomainHits> hits = new ArrayList<>(domainStats.size());
-
-    for(Map.Entry<String, Integer> entry: domainStats.entrySet())
-    {
-      hits.add(new DomainHits(entry.getKey(), entry.getValue()));
-    }
-    hits.sort((a,b)->b.hits-a.hits);
-    stats.domainStats = hits;
+    stats.stop();
 
     CrawlResults crawlResults = new CrawlResults(config, stats, issues, start);
     printToFile(crawlResults);
@@ -111,7 +88,7 @@ public class Crawl
   {
 
     if(stop) {
-      stats.terminationCode = TerminationCode.StoppedByUser;
+      stats.stoppedByUser();
       return Reason.Stopped;
     }
 
@@ -121,7 +98,7 @@ public class Crawl
     long deadline  = startTime + (config.getMinutesLimit() * 60_000);
 
     if (System.currentTimeMillis() > deadline) {
-      stats.terminationCode = TerminationCode.AllocatedTimeExpired;
+      stats.timeExpired();
       return issues.addIssue(Reason.ExceededExecutionTimeLimit);
     }
     return Reason.Ok;
@@ -150,24 +127,12 @@ public class Crawl
     return Reason.Ok;
   }
 
-  private void updateStats(String s)
-  {
-    try {
-      URL url = new URL(s);
-      String h = url.getHost();
-      domainStats.merge(h, 1, (a, b) -> a.intValue() + b);
 
-    } catch (MalformedURLException e) {
-    }
-
-
-  }
   private CrawlNode add(String url)
   {
 
     CrawlNode node = new CrawlNode(url);
-    ++stats.unique;
-    updateStats(url);
+    stats.update(url);
 
     links.put(url, node);
     if(start == null)
@@ -207,7 +172,7 @@ public class Crawl
   private void getPageLinks(CrawlNode parent, String url, int depth)
   {
 
-    ++stats.total;
+    stats.incrementTotal();
     if (!links.containsKey(url)) {
 
       try {
@@ -239,16 +204,19 @@ public class Crawl
           node.setStatus(statusCode);
 
           if (statusCode == 200) {
-            ++stats.fetchedOk;
+            stats.incrementFetched();
+
             node.setReason(Reason.Ok);
             Document document = connection.get();
-            ++stats.parsed;
+            stats.incrementParsed();
+
 
             for (String spec : config.getLinkTypes())
               getLinkSpec(node, depth, document, spec);
 
           } else {
-            ++stats.fetchFailed;
+            stats.incrementFetchFailures();
+
             node.setFollowed(false);
             node.setReason(Reason.OtherBadStatus);
           }
