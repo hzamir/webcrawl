@@ -29,7 +29,6 @@ target/webcrawl-1.0.jar
 * These could potentially run for a long time, so some intermittent updates status updates would be necessary
 * From metrics a summary of overall completeness or success should be made
 * Even better the link types that are followed could be checkable boxes in a gui control prior to running
-* Possibly implement a breadth first search, since that would produce the most useful output when time limited or interrupted
 * a visualization from the output, as a network diagram would be good
 * provide authentication credentials to crawl parts of space that require authentication
 * provide more intelligible/editable controls over the process, since there are many potential parameters
