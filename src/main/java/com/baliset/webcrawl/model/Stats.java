@@ -2,6 +2,8 @@ package com.baliset.webcrawl.model;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.*;
 
+import java.util.*;
+
 public class Stats
 {
   @JacksonXmlProperty(isAttribute = true)
@@ -15,4 +17,6 @@ public class Stats
   public int fetchedOk;
   public int fetchFailed;
   public int parsed;
+
+  public List<DomainHits> domainStats;
 }

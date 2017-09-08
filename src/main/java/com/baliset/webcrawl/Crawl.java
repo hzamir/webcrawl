@@ -21,6 +21,7 @@ public class Crawl
 
   private Map<String, CrawlNode> links;
   private Queue<WorkItem>        queue;
+  private Map<String, Integer> domainStats;
 
 
   private CrawlNode start;     // place from which we trace all other nodes while crawling
@@ -38,6 +39,7 @@ public class Crawl
     logger.info(config.toString());
     links = new HashMap<>();
     queue = new LinkedList<>();
+    domainStats = new HashMap<>();
     stats= new Stats();
     stats.terminationCode = TerminationCode.CrawlCompleted;
     issues = new Issues();
@@ -76,6 +78,15 @@ public class Crawl
     doWork();
 
     stats.elapsedTime = durationFormat(Duration.between(startInstant, Instant.now()));
+
+    List<DomainHits> hits = new ArrayList<>(domainStats.size());
+
+    for(Map.Entry<String, Integer> entry: domainStats.entrySet())
+    {
+      hits.add(new DomainHits(entry.getKey(), entry.getValue()));
+    }
+    hits.sort((a,b)->b.hits-a.hits);
+    stats.domainStats = hits;
 
     CrawlResults crawlResults = new CrawlResults(config, stats, issues, start);
     printToFile(crawlResults);
@@ -139,11 +150,24 @@ public class Crawl
     return Reason.Ok;
   }
 
+  private void updateStats(String s)
+  {
+    try {
+      URL url = new URL(s);
+      String h = url.getHost();
+      domainStats.merge(h, 1, (a, b) -> a.intValue() + b);
+
+    } catch (MalformedURLException e) {
+    }
+
+
+  }
   private CrawlNode add(String url)
   {
 
     CrawlNode node = new CrawlNode(url);
     ++stats.unique;
+    updateStats(url);
 
     links.put(url, node);
     if(start == null)
