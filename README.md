@@ -15,7 +15,7 @@ mvn clean package
 
 ```bash
 # from the webcrawl directory (it is directly executable on a mac
-target/webcrawl-1.0.jar
+target/webcrawl-1.1.jar
 ```
 
 
