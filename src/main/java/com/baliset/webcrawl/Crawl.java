@@ -20,6 +20,10 @@ public class Crawl
   private String outputPath;
 
   private Map<String, CrawlNode> links;
+  private Queue<WorkItem>        queue;
+  private Map<String, Integer> domainStats;
+
+
   private CrawlNode start;     // place from which we trace all other nodes while crawling
   private Issues issues;
   private Stats stats;
@@ -34,6 +38,8 @@ public class Crawl
     this.outputPath = outputPath;
     logger.info(config.toString());
     links = new HashMap<>();
+    queue = new LinkedList<>();
+    domainStats = new HashMap<>();
     stats= new Stats();
     stats.terminationCode = TerminationCode.CrawlCompleted;
     issues = new Issues();
@@ -65,10 +71,22 @@ public class Crawl
   {
     startTime = System.currentTimeMillis();
     Instant startInstant = Instant.now();
-    
+
+
     getPageLinks(start, config.getInitialUrl(), 0);
 
+    doWork();
+
     stats.elapsedTime = durationFormat(Duration.between(startInstant, Instant.now()));
+
+    List<DomainHits> hits = new ArrayList<>(domainStats.size());
+
+    for(Map.Entry<String, Integer> entry: domainStats.entrySet())
+    {
+      hits.add(new DomainHits(entry.getKey(), entry.getValue()));
+    }
+    hits.sort((a,b)->b.hits-a.hits);
+    stats.domainStats = hits;
 
     CrawlResults crawlResults = new CrawlResults(config, stats, issues, start);
     printToFile(crawlResults);
@@ -132,10 +150,24 @@ public class Crawl
     return Reason.Ok;
   }
 
+  private void updateStats(String s)
+  {
+    try {
+      URL url = new URL(s);
+      String h = url.getHost();
+      domainStats.merge(h, 1, (a, b) -> a.intValue() + b);
+
+    } catch (MalformedURLException e) {
+    }
+
+
+  }
   private CrawlNode add(String url)
   {
+
     CrawlNode node = new CrawlNode(url);
     ++stats.unique;
+    updateStats(url);
 
     links.put(url, node);
     if(start == null)
@@ -145,16 +177,30 @@ public class Crawl
   }
 
 
+  private void doWork()
+  {
+      int count;
+
+      while((count = queue.size()) > 0)
+      {
+          WorkItem peek = queue.peek();
+          logger.info("level " + peek.getDepth() + " contains " + count + " items");
+          for(int i = 0; i < count; ++i) {
+            WorkItem item = queue.remove();
+            getPageLinks(item.getNode(), item.getAttrKey(), item.getDepth());
+          }
+      }
+  }
+
+
   private void getLinkSpec(CrawlNode node,int depth, Document document, String spec)
   {
     Elements linksOnPage = document.select(spec);
-
-    String attributeKey = "abs:" +  spec.split("[\\[\\]]")[1];
+    String attributeKey = "abs:" +    spec.split("[\\[\\]]")[1];
 
     for (Element page : linksOnPage) {
-      getPageLinks(node, page.attr(attributeKey), depth);
+      queue.add(new WorkItem(node,  page.attr(attributeKey), depth));  // bread first search queue
     }
-
   }
 
 

@@ -29,6 +29,7 @@ public class CrawlNode
   public CrawlNode(String url)
   {
     this.url = url;
+    this.followed = true;
   }
 
   public void addChild(CrawlNode node)
