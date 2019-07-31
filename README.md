@@ -1,4 +1,6 @@
 # Webcrawl Exercise
+* Note: This project was written solely to satisfy a job interview assignment: "Write us a webcrawler"
+* Everything else about it (particularly the notes, etc. below) should be understood in that context. It was part of the assignment!
 
 # 1. how to build it
 
